@@ -1,0 +1,152 @@
+{
+  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json",
+  "adapters": {
+    "python-remote-docker": {
+      "variables": {
+        "port": "8765"
+      },
+      "port": "${port}",
+      "launch": {
+        "remote": {
+          "container": "${ContainerID}",
+          "runCommand": [
+            "python3", "-m", "debugpy", "--listen", "0.0.0.0:${port}",
+                                        "--wait-for-client",
+                                        "%CMD%"
+          ]
+        },
+        "delay": "5000m"
+      }
+    },
+    "python-remote-ssh": {
+      "extends": "python-remote-docker",
+      "host": "${host}",
+      "launch": {
+        "remote": {
+          "!container": "REMOVE",
+          "!delay": "REMOVE",
+
+          "!!test": "This is a !test",
+
+          "host": "${host}",
+          "account": "${account}"
+        }
+      }
+    }
+  },
+  "configurations": {
+    "run": {
+      "adapter": "debugpy",
+      "configuration": {
+        "python": "/home/leo/anaconda3/envs/rl4dvit/bin/python",
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${file}",
+        "stopOnEntry": false,
+        "console": "integratedTerminal"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    },
+    "run - argv": {
+      "adapter": "debugpy",
+      "configuration": {
+        "python": "/home/leo/anaconda3/envs/rl4dvit/bin/python",
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${file}",
+        "stopOnEntry": false,
+        "args#json": "${args:[]}",
+        "console": "integratedTerminal"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    },
+
+    "run - default": {
+      "adapter": "debugpy",
+      "variables": {
+        "MAKE_ENV_OUTPUT": {
+          "shell": "${workspaceRoot}/make_env.sh"
+        }
+      },
+      "configuration": {
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${program:${file\\}}",
+        "stopOnEntry#json": "${StopOnEntry:true}",
+        "console": "integratedTerminal",
+        "args#json": "${args:[]}",
+        "igored#json#s": "string not json",
+        "env#json": "${MAKE_ENV_OUTPUT}"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    },
+    "run - main.py": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${workspaceRoot}/main.py",
+        "stopOnEntry": false,
+        "console": "integratedTerminal"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    },
+    "run - exception question": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "type": "python",
+        "cwd": "${workspaceRoot}",
+        "program": "${file}",
+        "stopOnEntry": false,
+        "console": "integratedTerminal"
+      }
+    },
+    "run - remote host": {
+      "adapter": "python-remote-ssh",
+      "remote-cmdLine": [
+        "${remoteRoot}/main.py"
+      ],
+      "remote-request": "launch",
+      "configuration": {
+        "request": "attach",
+        "redirectOutput": true,
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "${remoteRoot}"
+          }
+        ]
+      }
+    }
+  }
+}
+
